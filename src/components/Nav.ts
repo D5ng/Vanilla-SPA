@@ -1,5 +1,5 @@
 import { Component } from "../lib/component/Component"
-import { Link } from "../lib/Link"
+import { Link } from "../lib/vanilla-router"
 
 export default class Nav extends Component {
   template(): string {
@@ -7,7 +7,7 @@ export default class Nav extends Component {
       <nav>
         <ul>
           <li>
-            ${Link({ to: "/", children: "Home", replace: true, state: { a: 1 } })}
+            ${Link({ to: "/", children: "Home" })}
           </li>
           <li>
             ${Link({ to: "/about", children: "About" })}
