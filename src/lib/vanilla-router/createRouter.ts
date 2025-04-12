@@ -24,8 +24,7 @@ class Router {
   init() {
     const { pathname } = window.location
     this.routes = this.routes.map((route) => ({ ...route, path: normalizePath(route.path) }))
-    this.changeUrl(pathname)
-
+    this.render(pathname)
     this.attachEventHandler()
   }
 
@@ -34,16 +33,13 @@ class Router {
     return route
   }
 
-  changeUrl(path: string) {
+  render(path: string) {
     const normalizePathname = normalizePath(path)
     const route = this.matchRoute(normalizePathname)
 
-    this.render(route)
-  }
-
-  render(route: Route | undefined) {
     if (!route) {
       this.rootElement.innerHTML = this.routes[0].errorComponent()
+      return
     }
 
     new route!.component({ target: this.rootElement })
@@ -77,11 +73,11 @@ class Router {
         window.history.pushState(state || null, "", to)
       }
 
-      this.changeUrl(to)
+      this.render(to)
     })
 
     window.addEventListener("popstate", () => {
-      this.changeUrl(window.location.pathname)
+      this.render(window.location.pathname)
     })
   }
 }
