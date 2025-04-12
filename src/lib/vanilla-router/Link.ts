@@ -1,4 +1,5 @@
 import { NavigateOptions } from "./router.type"
+import { serializeDataAttributes } from "./router.utils"
 
 interface LinkProps extends NavigateOptions {
   to: string
@@ -6,13 +7,7 @@ interface LinkProps extends NavigateOptions {
 }
 
 export function Link({ to, children, ...options }: LinkProps) {
-  const dataAttributes = options
-    ? Object.entries(options)
-        .map(([key, value]) =>
-          typeof value === "object" ? `data-${key}=${JSON.stringify(value)}` : `data-${key}="${value}"`,
-        )
-        .join("")
-    : ""
+  const dataAttributes = serializeDataAttributes(options)
 
   return `
     <a href=${to} data-component="Link" data-href=${to} ${dataAttributes}>${children}</a>
