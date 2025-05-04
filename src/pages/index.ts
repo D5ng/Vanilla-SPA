@@ -1,2 +1,6 @@
-export { default as About } from "./About"
+export { default as Root } from "./Root"
 export { default as Home } from "./Home"
+export { default as About } from "./About"
+export { default as AboutDetail } from "./AboutDetail"
+export { default as Weather } from "./Weather"
+export { default as WeatherFiveDays } from "./WeatherFiveDays"
