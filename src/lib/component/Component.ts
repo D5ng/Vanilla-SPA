@@ -29,16 +29,12 @@ export class Component<Props = any, State = any> {
 
     this.state = { ...this.state, ...newState }
 
-    queueMicrotask(() => {
-      this.render()
-    })
+    this.render()
   }
 
   render() {
-    queueMicrotask(() => {
-      this.element.innerHTML = this.template()
-      this.componentDidMount()
-    })
+    this.element.innerHTML = this.template()
+    this.componentDidMount()
   }
 
   addEvent(
