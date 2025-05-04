@@ -1,3 +1,5 @@
+import type { Route, RouteWithParams } from "./router.type"
+
 export function normalizePath(path: string) {
   return path.replace(/^\/?/, "")
 }

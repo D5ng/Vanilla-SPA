@@ -1,21 +1,36 @@
+// import { findRoute } from "./logic"
+import { renderRoute } from "./logic/renderRoute"
 import { navigate } from "./navigate"
 import type { NavigateEventDetail, Route } from "./router.type"
-import { normalizePath } from "./router.utils"
 
 class Router {
   static _instance: Router
-  private routes: Route[]
+  public routes: Route[]
   public rootElement: HTMLElement
+  public outletElement: HTMLElement | null
+  public prevPath: string
 
   private constructor(routes: Route[], rootElement: HTMLElement) {
     this.routes = routes
     this.rootElement = rootElement
+    this.outletElement = null
+    this.prevPath = ""
     this.init()
   }
 
-  static getInstance(routes: Route[], rootElement: HTMLElement) {
+  static setInstance(routes: Route[], rootElement: HTMLElement) {
     if (!Router._instance) {
       Router._instance = new Router(routes, rootElement)
+      return
+    }
+
+    return Router._instance
+  }
+
+  static getInstance() {
+    if (!Router._instance) {
+      console.warn("Router 인스턴스가 존재하지 않습니다.")
+      return
     }
 
     return Router._instance
@@ -23,31 +38,24 @@ class Router {
 
   init() {
     const { pathname } = window.location
-    this.routes = this.routes.map((route) => ({ ...route, path: normalizePath(route.path) }))
-    this.render(pathname)
+    renderRoute(this.routes, this.rootElement, pathname, pathname)
+    this.prevPath = pathname
     this.attachEventHandler()
   }
 
-  matchRoute(path: string) {
-    const route = this.routes.find((route) => route.path === path)
-    return route
-  }
-
   render(path: string) {
-    const normalizePathname = normalizePath(path)
-    const route = this.matchRoute(normalizePathname)
-
-    if (!route) {
-      this.rootElement.innerHTML = this.routes[0].errorComponent()
-      return
-    }
-
-    new route!.component({ target: this.rootElement })
+    renderRoute(this.routes, this.rootElement, this.prevPath, path)
+    this.prevPath = path
   }
 
   attachEventHandler() {
     document.addEventListener("click", (event: Event) => {
-      const target = event.target as HTMLElement
+      const target = (event.target as HTMLElement).closest("a")
+
+      if (!target) {
+        console.warn("event.target에 상위 요소에 커스텀 Link가 없습니다")
+        return
+      }
 
       if (target.nodeName !== "A" || !target.dataset.component || !target.dataset.href) {
         return
@@ -56,6 +64,7 @@ class Router {
       event.preventDefault()
 
       const { href, replace, state } = target.dataset
+
       const options = {
         replace: Boolean(replace),
         state: typeof state === "object" ? JSON.parse(state as string) : null,
@@ -82,4 +91,5 @@ class Router {
   }
 }
 
-export const createRouter = (routes: Route[], rootElement: HTMLElement) => Router.getInstance(routes, rootElement)
+export { Router }
+export const createRouter = (routes: Route[], rootElement: HTMLElement) => Router.setInstance(routes, rootElement)
