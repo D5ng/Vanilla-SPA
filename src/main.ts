@@ -1,4 +1,5 @@
 import App from "./App"
+import "./index.css"
 
 const rootElement = document.getElementById("app")
 
